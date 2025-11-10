@@ -1,98 +1,160 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+"use client"
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { useState, useCallback } from "react"
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, StatusBar, Alert, RefreshControl } from "react-native"
+import Header from "../../components/Header"
+import WalletBalance from "../../components/WalletBalance"
+import PaymentForm from "../../components/PaymentForm"
+import RecentTransactions from "../../components/RecentTransactions"
+import { type PaymentHistoryItem, type User, Colors } from "../types"
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [refreshing, setRefreshing] = useState(false)
+  const [user, setUser] = useState<User>({
+    name: "Taiwo Adelaja",
+    walletBalance: 14003.98,
+  })
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+  const [recentTransactions, setRecentTransactions] = useState<PaymentHistoryItem[]>([
+    {
+      id: "1",
+      date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      amount: "₦2,750",
+      keycode: "123-456-789-011-012",
+      status: "Successful",
+      type: "Debit",
+    },
+    {
+      id: "2",
+      date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+      amount: "₦7,000",
+      keycode: "234-567-890-122-233",
+      status: "Successful",
+      type: "Debit",
+    },
+    {
+      id: "3",
+      date: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+      amount: "₦5,000",
+      keycode: "N/A",
+      status: "Failed",
+      type: "Debit",
+    },
+    {
+      id: "4",
+      date: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+      amount: "₦10,000",
+      keycode: "345-678-901-233-344",
+      status: "Successful",
+      type: "Top-up",
+    },
+  ])
+
+  const handleNotificationPress = () => {
+    Alert.alert("Notifications", "You have 5 unread notifications", [
+      {
+        text: "View All",
+        onPress: () => console.log("View All pressed"),
+        style: "default",
+      },
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+    ])
+  }
+
+  const handleScheduleSuccess = (scheduleData: { interval: string; count: number }) => {
+    console.log("Schedule set:", scheduleData)
+  }
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true)
+
+    setTimeout(() => {
+      setUser({
+        name: "Taiwo Adelaja",
+        walletBalance: 14003.98 + Math.random() * 1000,
+      })
+
+      const newTransaction: PaymentHistoryItem = {
+        id: Date.now().toString(),
+        date: new Date().toISOString(),
+        amount: `₦${Math.floor(500 + Math.random() * 2000).toLocaleString()}`,
+        keycode:
+          Math.random() > 0.3
+            ? `${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}`
+            : "N/A",
+        status: Math.random() > 0.3 ? "Successful" : "Failed",
+        type: Math.random() > 0.7 ? "Top-up" : "Debit",
+      }
+
+      setRecentTransactions((prev) => [newTransaction, ...prev.slice(0, 3)])
+      setRefreshing(false)
+    }, 1500)
+  }, [])
+
+  const handleRefreshPress = () => {
+    onRefresh()
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor={Colors.background} barStyle="dark-content" />
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollViewContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[Colors.primary]}
+            tintColor={Colors.primary}
+          />
+        }
+      >
+        <Header
+          onNotificationPress={handleNotificationPress}
+          onRefreshPress={handleRefreshPress}
+          refreshing={refreshing}
+        />
+        <WalletBalance user={user} />
+        <PaymentForm onScheduleSuccess={handleScheduleSuccess} />
+        <RecentTransactions transactions={recentTransactions} />
+
+        {refreshing && (
+          <View style={styles.refreshIndicator}>
+            <Text style={styles.refreshText}>Refreshing...</Text>
+          </View>
+        )}
+        
+        <View style={styles.bottomSpacer} />
+      </ScrollView>
+    </SafeAreaView>
+  )
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: Colors.background,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  scrollView: {
+    flex: 1,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  scrollViewContent: {
+    paddingBottom: 80,
   },
-});
+  refreshIndicator: {
+    padding: 16,
+    alignItems: "center",
+  },
+  refreshText: {
+    color: Colors.textSecondary,
+    fontSize: 14,
+  },
+  bottomSpacer: {
+    height: 20,
+  },
+})
