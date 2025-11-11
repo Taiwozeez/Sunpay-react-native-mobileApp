@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from '../app/types';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 interface HeaderProps {
   onNotificationPress?: () => void;
@@ -14,6 +15,13 @@ const Header: React.FC<HeaderProps> = ({
   onRefreshPress, 
   refreshing = false 
 }) => {
+  const router = useRouter();
+
+  const handleNotificationPress = () => {
+    // Navigate to notifications page (now in root app directory)
+    router.push('/notifications');
+  };
+
   return (
     <View style={styles.header}>
       <View style={styles.statusBarBackground} />
@@ -35,7 +43,7 @@ const Header: React.FC<HeaderProps> = ({
         
         <TouchableOpacity 
           style={styles.notificationIcon} 
-          onPress={onNotificationPress}
+          onPress={handleNotificationPress}
         >
           <Ionicons name="notifications-outline" size={24} color={Colors.primary} />
           <View style={styles.badge}>

@@ -11,9 +11,9 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: '#1a1a1a',
           borderTopWidth: 0,
-          height: 65,
-          paddingBottom: 12,
-          paddingTop: 8,
+          height: 75,
+          paddingBottom: 15,
+          paddingTop: 10,
           borderTopLeftRadius: 30,
           borderTopRightRadius: 30,
           marginHorizontal: 0,
@@ -35,7 +35,7 @@ export default function TabLayout() {
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '500',
-          marginTop: 2,
+          marginTop: 4,
         },
       }}>
       <Tabs.Screen
@@ -69,13 +69,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="notifications"
+        name="help"
         options={{
-          title: 'Notifications',
+          title: 'Help',
           tabBarIcon: ({ size, color, focused }) => (
             <View style={[styles.iconContainer, focused && styles.iconContainerActive]}>
               <Ionicons 
-                name="notifications" 
+                name="help-circle" 
                 size={size-4} 
                 color={focused ? '#000000' : color} 
               />
@@ -104,12 +104,12 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
   iconContainer: {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 16,
-    marginTop: 2,
+    borderRadius: 18,
+    marginTop: 4,
   },
   iconContainerActive: {
     backgroundColor: Colors.primary,

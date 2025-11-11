@@ -7,10 +7,13 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
-import { Colors } from '../types';
+import { Colors } from './types';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 export default function NotificationsScreen() {
+  const router = useRouter();
+
   const notifications = [
     {
       id: '1',
@@ -51,17 +54,21 @@ export default function NotificationsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Ionicons name="arrow-back" size={24} color={Colors.text} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Notifications</Text>
+        <View style={styles.placeholder} />
+      </View>
+
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollViewContent}
       >
-        <View style={styles.header}>
-          <Text style={styles.title}>Notifications</Text>
-          <TouchableOpacity style={styles.clearButton}>
-            <Text style={styles.clearButtonText}>Mark all as read</Text>
-          </TouchableOpacity>
-        </View>
-
         {notifications.map((notification) => (
           <TouchableOpacity 
             key={notification.id} 
@@ -101,31 +108,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: Colors.card,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  backButton: {
+    padding: 8,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: Colors.text,
+  },
+  placeholder: {
+    width: 40,
+  },
   scrollView: {
     flex: 1,
   },
   scrollViewContent: {
     padding: 20,
     paddingBottom: 80,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: Colors.text,
-  },
-  clearButton: {
-    padding: 8,
-  },
-  clearButtonText: {
-    color: Colors.primary,
-    fontWeight: '600',
-    fontSize: 14,
   },
   notificationCard: {
     backgroundColor: Colors.card,
