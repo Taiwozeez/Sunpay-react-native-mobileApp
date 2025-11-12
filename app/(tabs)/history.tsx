@@ -17,6 +17,7 @@ const HistoryScreen: React.FC = () => {
       keycode: "123-456-789-011-012",
       status: "Successful",
       type: "Debit",
+      lampNumber: "003842109"
     },
     {
       id: "2",
@@ -25,6 +26,7 @@ const HistoryScreen: React.FC = () => {
       keycode: "N/A",
       status: "Failed",
       type: "Debit",
+      lampNumber: "003842110"
     },
     {
       id: "3",
@@ -33,6 +35,7 @@ const HistoryScreen: React.FC = () => {
       keycode: "234-567-890-122-233",
       status: "Successful",
       type: "Debit",
+      lampNumber: "003842111"
     },
     {
       id: "4",
@@ -41,6 +44,7 @@ const HistoryScreen: React.FC = () => {
       keycode: "345-678-901-233-344",
       status: "Successful",
       type: "Debit",
+      lampNumber: "003842112"
     },
     {
       id: "5",
@@ -49,6 +53,7 @@ const HistoryScreen: React.FC = () => {
       keycode: "N/A",
       status: "Failed",
       type: "Debit",
+      lampNumber: "003842113"
     },
     {
       id: "6",
@@ -57,6 +62,7 @@ const HistoryScreen: React.FC = () => {
       keycode: "456-789-012-344-455",
       status: "Successful",
       type: "Debit",
+      lampNumber: "003842114"
     },
     {
       id: "7",
@@ -65,6 +71,7 @@ const HistoryScreen: React.FC = () => {
       keycode: "567-890-123-455-566",
       status: "Successful",
       type: "Debit",
+      lampNumber: "003842115"
     },
     {
       id: "8",
@@ -73,6 +80,7 @@ const HistoryScreen: React.FC = () => {
       keycode: "N/A",
       status: "Failed",
       type: "Debit",
+      lampNumber: "003842116"
     },
     {
       id: "9",
@@ -81,6 +89,7 @@ const HistoryScreen: React.FC = () => {
       keycode: "678-901-234-566-677",
       status: "Successful",
       type: "Debit",
+      lampNumber: "003842117"
     },
     {
       id: "10",
@@ -89,6 +98,7 @@ const HistoryScreen: React.FC = () => {
       keycode: "789-012-345-677-788",
       status: "Successful",
       type: "Debit",
+      lampNumber: "003842118"
     },
   ]
 
@@ -157,7 +167,7 @@ const HistoryScreen: React.FC = () => {
         {/* Date Range Selector */}
         <View style={styles.dateRangeContainer}>
           <View style={styles.dateRangeHeader}>
-            <Ionicons name="calendar" size={20} color={Colors.text} />
+            <Ionicons name="calendar-outline" size={20} color={Colors.text} />
             <Text style={styles.dateRangeTitle}>Date Range</Text>
           </View>
 
@@ -207,10 +217,13 @@ const HistoryScreen: React.FC = () => {
                 </View>
               </View>
 
-              {/* Amount */}
+              {/* Amount and Lamp Number */}
               <View style={styles.amountContainer}>
-                <Text style={styles.amountLabel}>Amount Paid:</Text>
-                <Text style={styles.amountText}>{item.amount}</Text>
+                <View style={styles.amountInfo}>
+                  <Text style={styles.amountLabel}>Amount Paid:</Text>
+                  <Text style={styles.amountText}>{item.amount}</Text>
+                  <Text style={styles.lampNumberText}>LN: {item.lampNumber}</Text>
+                </View>
               </View>
 
               {/* Keycode Section */}
@@ -254,7 +267,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   scrollViewContent: {
-    paddingBottom: 80, // Added this to prevent content from being blocked
+    paddingBottom: 80,
   },
   dateRangeContainer: {
     backgroundColor: Colors.card,
@@ -359,23 +372,30 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   amountContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     marginBottom: 12,
     paddingBottom: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#f5f5f5",
   },
+  amountInfo: {
+    flexDirection: "column",
+  },
   amountLabel: {
     fontSize: 14,
     color: Colors.textSecondary,
     fontWeight: "500",
+    marginBottom: 4,
   },
   amountText: {
     fontSize: 18,
     fontWeight: "bold",
     color: Colors.naira,
+    marginBottom: 2,
+  },
+  lampNumberText: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    fontWeight: "500",
   },
   keycodeSection: {
     marginBottom: 8,

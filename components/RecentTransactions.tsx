@@ -57,6 +57,9 @@ const RecentTransactions: React.FC<RecentTransactionsProps> = ({ transactions })
             <Text style={styles.transactionKeycode}>
               {item.keycode !== 'N/A' ? 'Keycode available' : 'Payment failed'}
             </Text>
+            <Text style={styles.lampNumber}>
+              LN: {item.lampNumber}
+            </Text>
           </View>
           <View style={styles.transactionAmount}>
             <Text style={[
@@ -138,6 +141,12 @@ const styles = StyleSheet.create({
   transactionKeycode: {
     fontSize: 12,
     color: Colors.textSecondary,
+    marginBottom: 2,
+  },
+  lampNumber: {
+    fontSize: 11,
+    color: Colors.textSecondary,
+    fontWeight: '500',
   },
   transactionAmount: {
     alignItems: 'flex-end',

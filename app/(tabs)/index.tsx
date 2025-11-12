@@ -1,110 +1,125 @@
-"use client"
-
-import { useState, useCallback } from "react"
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, StatusBar, Alert, RefreshControl } from "react-native"
-import Header from "../../components/Header"
-import WalletBalance from "../../components/WalletBalance"
-import PaymentForm from "../../components/PaymentForm"
-import RecentTransactions from "../../components/RecentTransactions"
-import { type PaymentHistoryItem, type User, Colors } from "../types"
+import React, { useState, useCallback } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  StatusBar,
+  Alert,
+  RefreshControl,
+} from 'react-native';
+import Header from '../../components/Header';
+import WalletBalance from '../../components/WalletBalance';
+import PaymentForm from '../../components/PaymentForm';
+import RecentTransactions from '../../components/RecentTransactions';
+import { PaymentHistoryItem, User, Colors } from '../types';
 
 export default function HomeScreen() {
-  const [refreshing, setRefreshing] = useState(false)
+  const [refreshing, setRefreshing] = useState(false);
   const [user, setUser] = useState<User>({
-    name: "Taiwo Adelaja",
+    name: 'Taiwo Adelaja',
     walletBalance: 14003.98,
-  })
+  });
 
   const [recentTransactions, setRecentTransactions] = useState<PaymentHistoryItem[]>([
     {
-      id: "1",
+      id: '1',
       date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      amount: "₦2,750",
-      keycode: "123-456-789-011-012",
-      status: "Successful",
-      type: "Debit",
+      amount: '₦2,750',
+      keycode: '123-456-789-011-012',
+      status: 'Successful',
+      type: 'Debit',
+      lampNumber: '003842101'
     },
     {
-      id: "2",
+      id: '2',
       date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      amount: "₦7,000",
-      keycode: "234-567-890-122-233",
-      status: "Successful",
-      type: "Debit",
+      amount: '₦7,000',
+      keycode: '234-567-890-122-233',
+      status: 'Successful',
+      type: 'Debit',
+      lampNumber: '003842102'
     },
     {
-      id: "3",
+      id: '3',
       date: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-      amount: "₦5,000",
-      keycode: "N/A",
-      status: "Failed",
-      type: "Debit",
+      amount: '₦5,000',
+      keycode: 'N/A',
+      status: 'Failed',
+      type: 'Debit',
+      lampNumber: '003842103'
     },
     {
-      id: "4",
+      id: '4',
       date: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-      amount: "₦10,000",
-      keycode: "345-678-901-233-344",
-      status: "Successful",
-      type: "Top-up",
+      amount: '₦10,000',
+      keycode: '345-678-901-233-344',
+      status: 'Successful',
+      type: 'Top-up',
+      lampNumber: '003842104'
     },
-  ])
+  ]);
 
   const handleNotificationPress = () => {
-    Alert.alert("Notifications", "You have 5 unread notifications", [
-      {
-        text: "View All",
-        onPress: () => console.log("View All pressed"),
-        style: "default",
-      },
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-    ])
-  }
+    Alert.alert(
+      'Notifications',
+      'You have 5 unread notifications',
+      [
+        {
+          text: 'View All',
+          onPress: () => console.log('View All pressed'),
+          style: 'default',
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ]
+    );
+  };
 
   const handleScheduleSuccess = (scheduleData: { interval: string; count: number }) => {
-    console.log("Schedule set:", scheduleData)
-  }
+    console.log('Schedule set:', scheduleData);
+  };
 
   const onRefresh = useCallback(() => {
-    setRefreshing(true)
-
+    setRefreshing(true);
+    
     setTimeout(() => {
       setUser({
-        name: "Taiwo Adelaja",
+        name: 'Taiwo Adelaja',
         walletBalance: 14003.98 + Math.random() * 1000,
-      })
+      });
 
       const newTransaction: PaymentHistoryItem = {
         id: Date.now().toString(),
         date: new Date().toISOString(),
         amount: `₦${Math.floor(500 + Math.random() * 2000).toLocaleString()}`,
-        keycode:
-          Math.random() > 0.3
-            ? `${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}`
-            : "N/A",
-        status: Math.random() > 0.3 ? "Successful" : "Failed",
-        type: Math.random() > 0.7 ? "Top-up" : "Debit",
-      }
+        keycode: Math.random() > 0.3 ? 
+          `${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}-${Math.floor(100 + Math.random() * 900)}` : 
+          'N/A',
+        status: Math.random() > 0.3 ? 'Successful' : 'Failed',
+        type: Math.random() > 0.7 ? 'Top-up' : 'Debit',
+        lampNumber: `00384${Math.floor(2000 + Math.random() * 8000)}` // Generate random 9-digit lamp number
+      };
 
-      setRecentTransactions((prev) => [newTransaction, ...prev.slice(0, 3)])
-      setRefreshing(false)
-    }, 1500)
-  }, [])
+      setRecentTransactions(prev => [newTransaction, ...prev.slice(0, 3)]);
+      setRefreshing(false);
+    }, 1500);
+  }, []);
 
   const handleRefreshPress = () => {
-    onRefresh()
-  }
+    onRefresh();
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor={Colors.background} barStyle="dark-content" />
-      <ScrollView
+      <ScrollView 
         style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollViewContent}
+        showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -114,7 +129,7 @@ export default function HomeScreen() {
           />
         }
       >
-        <Header
+        <Header 
           onNotificationPress={handleNotificationPress}
           onRefreshPress={handleRefreshPress}
           refreshing={refreshing}
@@ -122,7 +137,7 @@ export default function HomeScreen() {
         <WalletBalance user={user} />
         <PaymentForm onScheduleSuccess={handleScheduleSuccess} />
         <RecentTransactions transactions={recentTransactions} />
-
+        
         {refreshing && (
           <View style={styles.refreshIndicator}>
             <Text style={styles.refreshText}>Refreshing...</Text>
@@ -132,7 +147,7 @@ export default function HomeScreen() {
         <View style={styles.bottomSpacer} />
       </ScrollView>
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -148,7 +163,7 @@ const styles = StyleSheet.create({
   },
   refreshIndicator: {
     padding: 16,
-    alignItems: "center",
+    alignItems: 'center',
   },
   refreshText: {
     color: Colors.textSecondary,
@@ -157,4 +172,4 @@ const styles = StyleSheet.create({
   bottomSpacer: {
     height: 20,
   },
-})
+});

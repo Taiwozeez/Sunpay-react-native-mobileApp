@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import { PaymentFormData, Colors } from '../app/types';
 import { Ionicons } from '@expo/vector-icons';
 
 interface PaymentFormProps {
-  onScheduleSuccess?: (scheduleData: { interval: string; count: number }) => void;
+  onScheduleSuccess?: (scheduleData: { interval: string; count: number; amount: string }) => void;
 }
 
 const PaymentForm: React.FC<PaymentFormProps> = ({ onScheduleSuccess }) => {
@@ -34,6 +34,17 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onScheduleSuccess }) => {
     count: 1,
   });
   const [isScheduled, setIsScheduled] = useState(false);
+  const [showAddress, setShowAddress] = useState(false);
+  const [scheduleAmount, setScheduleAmount] = useState(''); // New state for schedule amount
+
+  // Check if lamp number is exactly 9 digits
+  useEffect(() => {
+    if (formData.lampNumber.length === 9 && /^\d+$/.test(formData.lampNumber)) {
+      setShowAddress(true);
+    } else {
+      setShowAddress(false);
+    }
+  }, [formData.lampNumber]);
 
   const handlePayment = () => {
     if (!formData.lampNumber || !formData.amount) {
@@ -54,25 +65,56 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onScheduleSuccess }) => {
   };
 
   const handleSchedulePress = () => {
+    setScheduleAmount(formData.amount); // Pre-fill with current amount
     setShowScheduleModal(true);
   };
 
   const handleScheduleConfirm = () => {
+    if (!scheduleAmount) {
+      Alert.alert('Error', 'Please enter an amount for the scheduled payment');
+      return;
+    }
+    
     setIsScheduled(true);
     setShowScheduleModal(false);
-    onScheduleSuccess?.(scheduleData);
+    setShowSuccessModal(true);
+    onScheduleSuccess?.({ ...scheduleData, amount: scheduleAmount });
   };
 
   const handleScheduleCancel = () => {
     setIsScheduled(false);
     setShowScheduleModal(false);
     setScheduleData({ interval: 'days', count: 1 });
+    setScheduleAmount(''); // Reset schedule amount
+  };
+
+  const handleCancelSchedule = () => {
+    Alert.alert(
+      'Cancel Schedule',
+      'Are you sure you want to cancel this scheduled payment?',
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes, Cancel',
+          style: 'destructive',
+          onPress: () => {
+            setIsScheduled(false);
+            setScheduleData({ interval: 'days', count: 1 });
+            setScheduleAmount('');
+            Alert.alert('Success', 'Scheduled payment has been cancelled');
+          },
+        },
+      ]
+    );
   };
 
   const getScheduleText = () => {
-    if (!isScheduled || !formData.amount) return null;
+    if (!isScheduled || !scheduleAmount) return null;
     
-    const amount = formData.amount;
+    const amount = scheduleAmount;
     const interval = scheduleData.interval;
     const count = scheduleData.count;
     
@@ -80,10 +122,34 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onScheduleSuccess }) => {
     return `₦${amount} deducted every ${count} ${intervalText}`;
   };
 
+  const formatLampNumber = (text: string) => {
+    // Remove non-numeric characters and limit to 9 digits
+    const numericText = text.replace(/[^0-9]/g, '').slice(0, 9);
+    return numericText;
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Make Payment</Text>
       
+      {/* Active Schedule Indicator */}
+      {isScheduled && (
+        <View style={styles.scheduleIndicator}>
+          <View style={styles.scheduleIndicatorContent}>
+            <Ionicons name="time" size={16} color={Colors.success} />
+            <Text style={styles.scheduleIndicatorText}>
+              Payment scheduled • {getScheduleText()}
+            </Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.manageScheduleButton}
+            onPress={handleCancelSchedule}
+          >
+            <Text style={styles.manageScheduleText}>Manage</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Lamp Number Input */}
       <View style={styles.formGroup}>
         <Text style={styles.label}>Enter Lamp No.</Text>
@@ -92,9 +158,20 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onScheduleSuccess }) => {
           placeholder="e.g. 003842109"
           placeholderTextColor="#999"
           value={formData.lampNumber}
-          onChangeText={(text) => setFormData({ ...formData, lampNumber: text })}
+          onChangeText={(text) => setFormData({ ...formData, lampNumber: formatLampNumber(text) })}
           keyboardType="numeric"
+          maxLength={9}
         />
+        
+        {/* Address Confirmation */}
+        {showAddress && (
+          <View style={styles.addressConfirmation}>
+            <Ionicons name="checkmark-circle" size={16} color={Colors.success} />
+            <Text style={styles.addressText}>
+              Adelaja Taiwo - 2B, Sunpay Street, Off Mall Avenue, Ojota, Lagos
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Amount Input */}
@@ -263,6 +340,19 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onScheduleSuccess }) => {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Schedule Payment</Text>
             
+            {/* Amount Input */}
+            <View style={styles.modalSection}>
+              <Text style={styles.modalLabel}>Enter Amount</Text>
+              <TextInput
+                style={[styles.input, styles.modalAmountInput]}
+                placeholder="₦0.00"
+                placeholderTextColor="#999"
+                value={scheduleAmount}
+                onChangeText={setScheduleAmount}
+                keyboardType="numeric"
+              />
+            </View>
+
             {/* Select Interval */}
             <View style={styles.modalSection}>
               <Text style={styles.modalLabel}>Select Interval</Text>
@@ -324,7 +414,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onScheduleSuccess }) => {
                 style={[styles.modalButton, styles.okButton]}
                 onPress={handleScheduleConfirm}
               >
-                <Text style={styles.okButtonText}>Ok</Text>
+                <Text style={styles.okButtonText}>Schedule</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -347,7 +437,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ onScheduleSuccess }) => {
             <Text style={styles.successTitle}>Scheduled Successfully</Text>
             
             <Text style={styles.successSubtitle}>
-              You can cancel anytime
+              {getScheduleText()}
+            </Text>
+
+            <Text style={styles.successNote}>
+              You can cancel anytime from the payment section
             </Text>
 
             <TouchableOpacity 
@@ -386,8 +480,42 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: Colors.text,
-    marginBottom: 20,
+    marginBottom: 16,
     textAlign: 'center',
+  },
+  // Active Schedule Indicator
+  scheduleIndicator: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#E8F5E8',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.success,
+    marginBottom: 16,
+  },
+  scheduleIndicatorContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  scheduleIndicatorText: {
+    fontSize: 14,
+    color: Colors.success,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  manageScheduleButton: {
+    backgroundColor: Colors.success,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  manageScheduleText: {
+    fontSize: 12,
+    color: Colors.text,
+    fontWeight: '600',
   },
   formGroup: {
     marginBottom: 20,
@@ -407,6 +535,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.text,
     backgroundColor: Colors.background,
+  },
+  // Address Confirmation
+  addressConfirmation: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E8F5E8',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.success,
+    marginTop: 8,
+  },
+  addressText: {
+    fontSize: 12,
+    color: Colors.success,
+    fontWeight: '500',
+    marginLeft: 8,
+    flex: 1,
   },
   amountContainer: {
     flexDirection: 'row',
@@ -584,6 +730,11 @@ const styles = StyleSheet.create({
     color: Colors.text,
     marginBottom: 12,
   },
+  modalAmountInput: {
+    borderWidth: 2,
+    borderColor: Colors.primary,
+    backgroundColor: '#FFFDF6',
+  },
   intervalContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -683,11 +834,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   successSubtitle: {
+    fontSize: 16,
+    color: Colors.success,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  successNote: {
     fontSize: 14,
     color: Colors.textSecondary,
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 20,
+    fontStyle: 'italic',
   },
   closeButton: {
     backgroundColor: Colors.primary,

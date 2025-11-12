@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -17,12 +17,21 @@ interface WalletBalanceProps {
   user: User;
 }
 
+interface VirtualAccount {
+  accountNumber: string;
+  bankName: string;
+  accountName: string;
+}
+
 const WalletBalance: React.FC<WalletBalanceProps> = ({ user }) => {
   const [showAddMoneyDrawer, setShowAddMoneyDrawer] = useState(false);
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
   const [amount, setAmount] = useState('');
+  const [virtualAccount, setVirtualAccount] = useState<VirtualAccount | null>(null);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const formatNaira = (amount: number) => {
     return `₦${amount.toLocaleString('en-NG', {
@@ -31,8 +40,52 @@ const WalletBalance: React.FC<WalletBalanceProps> = ({ user }) => {
     })}`;
   };
 
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  };
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (timeLeft === 0) {
+      setVirtualAccount(null);
+      setTimeLeft(null);
+      return;
+    }
+
+    if (timeLeft && timeLeft > 0) {
+      const timer = setTimeout(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [timeLeft]);
+
   const copyToClipboard = (text: string) => {
     Alert.alert('Copied!', `Account number copied to clipboard: ${text}`);
+  };
+
+  const handleVirtualAccountCopy = () => {
+    if (virtualAccount) {
+      copyToClipboard(virtualAccount.accountNumber);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const generateVirtualAccount = () => {
+    // Generate a random 10-digit account number
+    const generatedAccountNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+    
+    const newVirtualAccount: VirtualAccount = {
+      accountNumber: generatedAccountNumber,
+      bankName: "Sunpay NG",
+      accountName: "Go Sunpay"
+    };
+    
+    setVirtualAccount(newVirtualAccount);
+    setTimeLeft(3600); // 60 minutes in seconds
   };
 
   const handleAddMoney = (method: 'bank' | 'card') => {
@@ -111,7 +164,55 @@ const WalletBalance: React.FC<WalletBalanceProps> = ({ user }) => {
                 <Text style={styles.balanceAmountDrawer}>{formatNaira(user.walletBalance)}</Text>
               </View>
 
-              {/* Bank Transfer Option */}
+              {/* Virtual Account Section */}
+              <View style={styles.optionCard}>
+                <Text style={styles.sectionTitle}>Virtual Account</Text>
+                
+                {virtualAccount ? (
+                  <View style={styles.virtualAccountDetails}>
+                    <View style={styles.accountRow}>
+                      <Text style={styles.virtualAccountNumber}>{virtualAccount.accountNumber}</Text>
+                      <TouchableOpacity 
+                        style={[styles.copyButton, copied && styles.copiedButton]}
+                        onPress={handleVirtualAccountCopy}
+                      >
+                        <Text style={styles.copyText}>{copied ? 'Copied!' : 'Copy'}</Text>
+                      </TouchableOpacity>
+                    </View>
+                    
+                    <View style={styles.virtualAccountInfo}>
+                      <Text style={styles.virtualAccountInfoText}>
+                        <Text style={styles.infoLabel}>Bank: </Text>
+                        {virtualAccount.bankName}
+                      </Text>
+                      <Text style={styles.virtualAccountInfoText}>
+                        <Text style={styles.infoLabel}>Account Name: </Text>
+                        {virtualAccount.accountName}
+                      </Text>
+                    </View>
+
+                    {timeLeft !== null && (
+                      <Text style={styles.expiryText}>
+                        This account will expire in {formatTime(timeLeft)}
+                      </Text>
+                    )}
+                  </View>
+                ) : (
+                  <View style={styles.generateAccountSection}>
+                    <Text style={styles.generateAccountText}>
+                      Generate a temporary virtual account to add money
+                    </Text>
+                    <TouchableOpacity 
+                      style={styles.generateButton}
+                      onPress={generateVirtualAccount}
+                    >
+                      <Text style={styles.generateButtonText}>Generate Virtual Account</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+
+              {/* Bank Transfer Option
               <View style={styles.optionCard}>
                 <Text style={styles.sectionTitle}>SunPay Bank Account</Text>
                 
@@ -131,7 +232,7 @@ const WalletBalance: React.FC<WalletBalanceProps> = ({ user }) => {
                     <Text style={styles.accountInfoValue}>SunPay NG</Text>
                   </View>
                 </View>
-              </View>
+              </View> */}
 
               {/* Card Payment Option */}
               <View style={styles.optionCard}>
@@ -381,6 +482,68 @@ const styles = StyleSheet.create({
     color: Colors.text,
     marginBottom: 12,
   },
+  // Virtual Account Styles
+  virtualAccountDetails: {
+    backgroundColor: '#FFFDF6',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  virtualAccountNumber: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.text,
+  },
+  virtualAccountInfo: {
+    marginTop: 8,
+  },
+  virtualAccountInfoText: {
+    fontSize: 14,
+    color: Colors.text,
+    marginBottom: 4,
+  },
+  infoLabel: {
+    fontWeight: '600',
+    color: Colors.textSecondary,
+  },
+  expiryText: {
+    fontSize: 12,
+    color: '#FF4444',
+    fontWeight: '500',
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  generateAccountSection: {
+    backgroundColor: '#FFFDF6',
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: 'center',
+  },
+  generateAccountText: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  generateButton: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  generateButtonText: {
+    color: Colors.text,
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  copiedButton: {
+    backgroundColor: '#4CAF50',
+  },
+  // Existing Styles
   accountDetails: {
     backgroundColor: '#FFFDF6',
     padding: 12,

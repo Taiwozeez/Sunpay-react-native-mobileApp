@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import { Colors } from '../app/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -18,14 +18,18 @@ const Header: React.FC<HeaderProps> = ({
   const router = useRouter();
 
   const handleNotificationPress = () => {
-    // Navigate to notifications page (now in root app directory)
     router.push('/notifications');
   };
 
   return (
-    <View style={styles.header}>
-      <View style={styles.statusBarBackground} />
-      
+    <ImageBackground
+      source={require('../assets/images/lady-phone2 (2).jpg')} // your image path
+      style={styles.header}
+      resizeMode="cover"
+    >
+      {/* Dark overlay */}
+      <View style={styles.overlay} />
+
       {/* Top Bar with Refresh and Notification */}
       <View style={styles.topBar}>
         <TouchableOpacity 
@@ -52,44 +56,38 @@ const Header: React.FC<HeaderProps> = ({
         </TouchableOpacity>
       </View>
       
-      {/* Title Only - Removed Subtitle */}
+      {/* Title */}
       <View style={styles.titleContainer}>
         <Text style={styles.title}>SunPay</Text>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#1a1a1a',
+    height: 220, // increased height
     paddingHorizontal: 20,
-    paddingTop: 40,
-    paddingBottom: 40,
+    paddingTop: 50,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
+    overflow: 'hidden',
+    justifyContent: 'space-between',
   },
-  statusBarBackground: {
-    position: 'absolute',
-    top: -50,
-    left: 0,
-    right: 0,
-    height: 50,
-    backgroundColor: '#1a1a1a',
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.5)', // dark overlay with opacity
   },
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    zIndex: 2, // above overlay
   },
   iconButton: {
     padding: 8,
@@ -118,6 +116,11 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     alignItems: 'center',
+    zIndex: 2, // above overlay
+    position: 'absolute',
+    top: 90, // moves the title up; adjust as needed
+    left: 0,
+    right: 0,
   },
   title: {
     fontSize: 32,

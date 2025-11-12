@@ -12,18 +12,18 @@ import { Colors, PaymentHistoryItem } from '../app/types';
 
 const HistoryScreen: React.FC = () => {
   const paymentHistory: PaymentHistoryItem[] = [
-    { id: '1', date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), amount: '₦2,000', keycode: '123-456-789-011-012', status: 'Successful', type: 'Debit' },
-    { id: '2', date: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), amount: '₦3,500', keycode: 'N/A', status: 'Failed', type: 'Debit' },
-    { id: '3', date: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), amount: '₦1,200', keycode: '234-567-890-122-233', status: 'Successful', type: 'Debit' },
-    { id: '4', date: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(), amount: '₦5,000', keycode: '345-678-901-233-344', status: 'Successful', type: 'Debit' },
-    { id: '5', date: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString(), amount: '₦1,800', keycode: 'N/A', status: 'Failed', type: 'Debit' },
-    { id: '6', date: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), amount: '₦7,000', keycode: '456-789-012-344-455', status: 'Successful', type: 'Debit' },
-    { id: '7', date: new Date(Date.now() - 14 * 60 * 60 * 1000).toISOString(), amount: '₦2,750', keycode: '567-890-123-455-566', status: 'Successful', type: 'Debit' },
-    { id: '8', date: new Date(Date.now() - 16 * 60 * 60 * 1000).toISOString(), amount: '₦3,100', keycode: 'N/A', status: 'Failed', type: 'Debit' },
-    { id: '9', date: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(), amount: '₦4,600', keycode: '678-901-234-566-677', status: 'Successful', type: 'Debit' },
-    { id: '10', date: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(), amount: '₦2,300', keycode: '789-012-345-677-788', status: 'Successful', type: 'Debit' },
-    { id: '11', date: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString(), amount: '₦10,000', keycode: '890-123-456-788-899', status: 'Successful', type: 'Top-up' },
-    { id: '12', date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), amount: '₦15,000', keycode: '901-234-567-899-900', status: 'Successful', type: 'Top-up' },
+    { id: '1', date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), amount: '₦2,000', keycode: '123-456-789-011-012', status: 'Successful', type: 'Debit', lampNumber: '003842109' },
+    { id: '2', date: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), amount: '₦3,500', keycode: 'N/A', status: 'Failed', type: 'Debit', lampNumber: '003842110' },
+    { id: '3', date: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), amount: '₦1,200', keycode: '234-567-890-122-233', status: 'Successful', type: 'Debit', lampNumber: '003842111' },
+    { id: '4', date: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(), amount: '₦5,000', keycode: '345-678-901-233-344', status: 'Successful', type: 'Debit', lampNumber: '003842112' },
+    { id: '5', date: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString(), amount: '₦1,800', keycode: 'N/A', status: 'Failed', type: 'Debit', lampNumber: '003842113' },
+    { id: '6', date: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), amount: '₦7,000', keycode: '456-789-012-344-455', status: 'Successful', type: 'Debit', lampNumber: '003842114' },
+    { id: '7', date: new Date(Date.now() - 14 * 60 * 60 * 1000).toISOString(), amount: '₦2,750', keycode: '567-890-123-455-566', status: 'Successful', type: 'Debit', lampNumber: '003842115' },
+    { id: '8', date: new Date(Date.now() - 16 * 60 * 60 * 1000).toISOString(), amount: '₦3,100', keycode: 'N/A', status: 'Failed', type: 'Debit', lampNumber: '003842116' },
+    { id: '9', date: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString(), amount: '₦4,600', keycode: '678-901-234-566-677', status: 'Successful', type: 'Debit', lampNumber: '003842117' },
+    { id: '10', date: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(), amount: '₦2,300', keycode: '789-012-345-677-788', status: 'Successful', type: 'Debit', lampNumber: '003842118' },
+    { id: '11', date: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString(), amount: '₦10,000', keycode: '890-123-456-788-899', status: 'Successful', type: 'Top-up', lampNumber: '003842119' },
+    { id: '12', date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), amount: '₦15,000', keycode: '901-234-567-899-900', status: 'Successful', type: 'Top-up', lampNumber: '003842120' },
   ];
 
   const getStatusColor = (status: string) => {
@@ -60,7 +60,10 @@ const HistoryScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+      >
         <View style={styles.header}>
           <Text style={styles.title}>Payment History</Text>
           <Text style={styles.subtitle}>Your recent transactions and keycodes</Text>
@@ -110,6 +113,9 @@ const HistoryScreen: React.FC = () => {
                 <Text style={styles.timeText}>
                   {getTimeAgo(item.date)}
                 </Text>
+                <Text style={styles.lampNumberText}>
+                  LN: {item.lampNumber}
+                </Text>
               </View>
 
               <View style={[styles.cell, styles.amountCell]}>
@@ -144,6 +150,8 @@ const HistoryScreen: React.FC = () => {
         <TouchableOpacity style={styles.viewAllButton}>
           <Text style={styles.viewAllText}>Load More Transactions</Text>
         </TouchableOpacity>
+        
+        <View style={styles.bottomSpacer} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -157,6 +165,9 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     padding: 20,
+  },
+  scrollViewContent: {
+    paddingBottom: 80,
   },
   header: {
     marginBottom: 30,
@@ -269,6 +280,12 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 11,
     color: Colors.textSecondary,
+    marginBottom: 2,
+  },
+  lampNumberText: {
+    fontSize: 10,
+    color: Colors.textSecondary,
+    fontWeight: '500',
   },
   amountText: {
     fontSize: 16,
@@ -302,6 +319,9 @@ const styles = StyleSheet.create({
     color: Colors.text,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  bottomSpacer: {
+    height: 20,
   },
 });
 

@@ -5,6 +5,7 @@ export interface PaymentHistoryItem {
   keycode: string;
   status: 'Successful' | 'Failed';
   type: 'Top-up' | 'Debit';
+  lampNumber: string; // Added this line
 }
 
 export interface User {
@@ -25,7 +26,7 @@ export const Colors = {
   primary: '#FFD700',
   primaryDark: '#FFC400',
   secondary: '#FFA000',
-  background: '#FFFFFF',
+  background: '#FFFDE7',
   card: '#FFFFFF',
   text: '#333333',
   textSecondary: '#666666',
@@ -35,5 +36,4 @@ export const Colors = {
   naira: '#1A4F1A',
   debit: '#F44336',
   topup: '#4CAF50',
-  tabBar: '#1a1a1a',
 };
